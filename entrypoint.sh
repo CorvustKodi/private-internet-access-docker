@@ -66,6 +66,7 @@ for SUBNET in ${EXTRA_SUBNETS//,/ }; do
     exit 1
   fi
 done
+rm -rf /pf/*
 
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
@@ -249,7 +250,7 @@ printf " * Protocol: $PROTOCOL\n"
 printf " * Port: $PORT\n"
 printf " * Initial VPN IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
 cd "$TARGET_PATH"
-openvpn --config config.ovpn
+openvpn --config config.ovpn --script-security 2 --up /port-forward.sh
 status=$?
 printf "\n =========================================\n"
 printf " OpenVPN exit with status $status\n"

@@ -27,7 +27,7 @@ ENV USER= \
     EXTRA_SUBNETS=
 ENTRYPOINT /entrypoint.sh
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
+RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip curl && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
@@ -51,8 +51,10 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh healthcheck.sh /
+COPY port-forward.sh /port-forward.sh
+RUN mkdir /pf
 RUN chown nonrootuser -R /etc/unbound && \
-    chmod 700 /etc/unbound && \
+    chmod 700 /etc/unbound /port-forward.sh && \
     chmod 500 /entrypoint.sh healthcheck.sh && \
     chmod 400 \
         /etc/unbound/root.hints \
